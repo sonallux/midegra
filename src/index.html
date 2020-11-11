@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Microservice dependency graph</title>
+  </head>
+  <body>
+    <div class="split-panes">
+      <div class="pane-1">
+        <div class="header">
+          <input
+            class="btn"
+            accept=".json"
+            type="file"
+            id="loadFileInput"
+          />
+          <button class="btn" id="loadFileButton">Load file</button>
+          <a class="btn" id="saveFileButton" download="dependency-graph.json" target="_blank">Save file</a>
+        </div>
+        <div class="code">
+          <textarea id="editor" style="display: none;"></textarea>
+        </div>
+      </div>
+      <div id="pane-resizer">&nbsp;</div>
+      <div class="pane-2 graph-canvas"></div>
+    </div>
+  </body>
+</html>
