@@ -11,7 +11,14 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install and Build 🔧
+      - name: Setup Node.js 14 ⚙️
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: Install and Build 🛠️
+        env:
+          APP_BASE_HREF: /midegra/
         run: |
           npm ci
           npm run build

@@ -29,7 +29,7 @@ module.exports = (options) => ({
     plugins: [
         new HtmlWebpackPlugin({
             template: 'src/index.html',
-            base: '/',
+            base: process.env.APP_BASE_HREF ||'/',
         }),
         new CopyWebpackPlugin({
             patterns: [
