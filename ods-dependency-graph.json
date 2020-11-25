@@ -1,0 +1,82 @@
+[
+  {
+    "id": "rabbitmq",
+    "type": "msg-broker"
+  },
+  {
+    "id": "adapter",
+    "type": "service",
+    "uses": ["adapter-db", "rabbitmq"],
+    "produces": [
+      "datasource.execution.success",
+      "datasource.execution.failed",
+      "datasource.config.created",
+      "datasource.config.updated",
+      "datasource.config.deleted"
+    ]
+  },
+  {
+    "id": "adapter-db",
+    "type": "database"
+  },
+  {
+    "id": "scheduler",
+    "type": "service",
+    "uses": ["rabbitmq", "adapter"],
+    "consumes": ["datasource.config.*"]
+  },
+  {
+    "id": "storage-mq",
+    "type": "service",
+    "uses": ["rabbitmq", "storage-db"],
+    "consumes": ["pipeline.config.*", "pipeline.execution.*"]
+  },
+  {
+    "id": "storage",
+    "type": "service",
+    "uses": ["storage-db"]
+  },
+  {
+    "id": "storage-db",
+    "type": "database"
+  },
+  {
+    "id": "pipeline",
+    "type": "service",
+    "uses": ["rabbitmq", "pipeline-db"],
+    "produces": [
+      "pipeline.execution.success",
+      "pipeline.execution.error",
+      "pipeline.config.created",
+      "pipeline.config.updated",
+      "pipeline.config.deleted"
+    ],
+    "consumes": [
+      "datasource.execution.success"
+    ]
+  },
+  {
+    "id": "pipeline-db",
+    "type": "database"
+  },
+  {
+    "id": "notification",
+    "type": "service",
+    "uses": ["rabbitmq", "notification-db"],
+    "consumes": [
+      "datasource.execution.success"
+    ]
+  },
+  {
+    "id": "notification-db",
+    "type": "database"
+  },
+  {
+    "id": "traefik",
+    "type": "service",
+    "uses": [
+      "adapter","scheduler","storage-mq","storage",
+      "pipeline","notification", "rabbitmq"
+    ]
+  }
+]

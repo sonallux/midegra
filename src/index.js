@@ -7,16 +7,21 @@ import {toDotString} from './dot-renderer'
 
 import './index.css';
 
+/**
+ * @type {import('./dependency-graph').Service[]}
+ */
 export const SERVICES = [
     {
         id: "service1",
         type: "service",
-        uses: ['db', 'broker']
+        uses: ['db', 'broker'],
+        produces: ['event.create', 'event.update']
     },
     {
         id: "service2",
         type: "service",
-        uses: ['broker']
+        uses: ['broker'],
+        consumes: ['event.*']
     },
     {
         id: "db",
@@ -63,21 +68,17 @@ const graphVizRenderer = new GraphVizRenderer('.graph-canvas', dotGraph)
 const loadFileInput = d3.select('#loadFileInput').node()
 loadFileInput.addEventListener('change', event => {
     const file = event.target.files[0]
-    if (!file) {
-        alert("Failed to load file");
-    } else if (file.type !== 'application/json' && !file.name.endsWith(".json")) {
-        alert(`${file.name} is not a valid JDL or text file.`);
-    } else {
-        const fileReader = new FileReader()
-        fileReader.onload = function (e) {
-            if (e && e.target) {
-                var contents = e.target.result
-                console.log(`Got the file name: ${file.name} type: ${file.type} size: ${file.size} bytes`)
-                editor.setValue(contents)
-            }
-        };
-        fileReader.readAsText(file)
-    }
+    console.log(`Start loading file name: ${file.name} type: ${file.type} size: ${file.size} bytes`)
+    const fileReader = new FileReader()
+    fileReader.onload = function (e) {
+        if (e && e.target) {
+            const contents = e.target.result
+            console.log(`Loaded file name: ${file.name}`)
+            editor.setValue(contents)
+        }
+    };
+    fileReader.readAsText(file)
+    
 })
 d3.select('#loadFileButton').on('click', () => loadFileInput.click())
 

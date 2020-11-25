@@ -43,16 +43,16 @@ export class DependencyGraph {
      * @param {string} serviceId 
      * @returns {string[] | undefined}
      */
-    getProducedEvents() {
+    getAllProducedEvents() {
         return this.services.flatMap(service => service.produces ?? [])
     }
 
     /**
      * @param {string} event 
-     * @returns {}
+     * @returns {Service[]}
      */
     getConsumer(event) {
-        this.services.filter(service => {
+        return this.services.filter(service => {
             if (service.consumes === undefined) {
                 return false
             }
@@ -62,10 +62,10 @@ export class DependencyGraph {
 
     /**
      * @param {string} event 
-     * @returns {}
+     * @returns {Service[]}
      */
     getProducer(eventPattern) {
-        this.services.filter(service => {
+        return this.services.filter(service => {
             if (service.produces === undefined) {
                 return false
             }

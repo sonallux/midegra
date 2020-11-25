@@ -3,17 +3,24 @@
  * @returns {string} dot string
  */
 export function toDotString(dependencyGraph) {
-    const nodeString = dependencyGraph.services.map(toDotNodeString).join('\n  ')
-    const edgeString = dependencyGraph.services.map(toDotEdgeString).filter(e => e.length > 0).join('\n  ')
+    const nodeStrings = dependencyGraph.services.map(getServiceNode)
+    const edgeStrings = dependencyGraph.services.flatMap(getUsesEdges)
     
-    return `digraph {\n  ${nodeString}\n  ${edgeString}\n}`
+    const eventStrings = dependencyGraph.getAllProducedEvents().map(getEventNode)
+    const producingEdges = dependencyGraph.services.flatMap(getProducingEdges)
+    const consumingEdges = dependencyGraph.getAllProducedEvents().flatMap(event => getConsumingEdges(dependencyGraph, event))
+
+    return `digraph {\n  node[shape=record]\n  rankdir=LR\  ${[...nodeStrings, ...edgeStrings, ...eventStrings, ...producingEdges, ...consumingEdges].join('\n  ')}\n}`
 }
 
 function toDotId(id) {
-    return id.replace("-", "_")
+    return id.replaceAll('-', '_').replaceAll('.', '__')
 }
 
-function toDotNodeString(service) {
+/**
+ * @param {import("./dependency-graph").Service} service
+ */
+function getServiceNode(service) {
     switch(service.type) {
         case 'service': return `${toDotId(service.id)} [shape=record,label="${service.id}"]`
         case 'database': return `${toDotId(service.id)} [shape=cylinder,label="${service.id}"]`
@@ -22,14 +29,37 @@ function toDotNodeString(service) {
     }
 }
 
-function toDotEdgeString(service) {
-    let edgeString = ''
+/**
+ * @param {import("./dependency-graph").Service} service
+ */
+function getUsesEdges(service) {
     if (!Array.isArray(service.uses)) {
-        return edgeString
+        return []
     }
-    for (const depenency of service.uses) {
-        edgeString += `\n  ${toDotId(service.id)} -> ${toDotId(depenency)}`
-    }
-    return edgeString
+    return service.uses.map(dependency => `${toDotId(service.id)} -> ${toDotId(dependency)}`)
 }
 
+/**
+ * @param {string} event 
+ */
+function getEventNode(event) {
+    return `${toDotId(event)} [shape=ellipse,label="${event}"]`
+}
+
+/**
+ * @param {import("./dependency-graph").Service} service
+ */
+function getProducingEdges(service) {
+    if (!Array.isArray(service.produces)) {
+        return []
+    }
+    return service.produces.map(event => `${toDotId(service.id)} -> ${toDotId(event)} [style="dashed"]`)
+}
+
+/**
+ * @param {import("./dependency-graph").DependencyGraph} dependencyGraph
+ * @param {string} event
+ */
+function getConsumingEdges(dependencyGraph, event) {
+    return dependencyGraph.getConsumer(event).map(consumer => `${toDotId(event)} -> ${toDotId(consumer.id)} [style="dashed"]`)
+}
