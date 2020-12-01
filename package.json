@@ -2,15 +2,15 @@
   "name": "midegra",
   "version": "0.0.1",
   "description": "Microservices dependency graph",
-  "author": "jsone-studios",
+  "author": "sonallux",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jsone-studios/midegra.git"
+    "url": "https://github.com/sonallux/midegra.git"
   },
-  "homepage": "https://github.com/jsone-studios/midegra#readme",
+  "homepage": "https://github.com/sonallux/midegra#readme",
   "bugs": {
-    "url": "https://github.com/jsone-studios/midegra/issues"
+    "url": "https://github.com/sonallux/midegra/issues"
   },
   "main": "index.js",
   "scripts": {
